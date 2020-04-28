@@ -135,7 +135,6 @@ graph dfs1 {
         g.depthFirstSearch("A", v);
         
         List<String> order = v.getOrder();
-        System.out.println(order);
         assertEquals("A", order.get(0));
         assertEquals("E", order.get(2));
     }
