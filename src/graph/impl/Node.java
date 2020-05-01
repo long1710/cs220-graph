@@ -117,7 +117,7 @@ public class Node implements INode
      * @return
      */
     public boolean hasEdge(INode other) {
-        return this.getNeighbors().size() > 0;
+        return this.getNeighbors().contains(other);
     }
     
     /**

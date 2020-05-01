@@ -169,38 +169,59 @@ public class Graph implements IGraph
      * @return
      */
     public IGraph primJarnik() {
-        HashSet<String> set = new HashSet<>();
+        /*
+        1/start from first node, call this MST, add neighbor to a pqueue if neighbor is not already in MST
+        2/ dequeue -> check neighbor, start from smallest, if the node is in MST, connect
+        3/ Repeat until none is left 
+         */
+        HashSet<String> set = new HashSet<>(); // this set shall contains node in Prim tree
         INode random = random();
         PriorityQueue<Path> pq = new PriorityQueue<>(new PathComparator());
-        //Path start = new Path(random, 0);
-        Path start = new Path(this.getOrCreateNode("A"), 0);
+        Path start = new Path(random, 0);
         IGraph ans = new Graph();
+        //set up the first node
+        
+        String placebo  = start.returnPath().getName();
         pq.add(start);
-        int i = 0;
-        System.out.println("A");
-        while(!pq.isEmpty() || set.size() < this.getAllNodes().size()){
-            Path path = pq.poll();          
-            INode node = path.returnPath();
-            INode temp = ans.getOrCreateNode(node.getName());
-            set.add(node.getName());
-            for(INode x: node.getNeighbors()){
-                if(set.contains(x.getName())) {
-                    System.out.println("continue");
-                    continue;
-                } else {
-                    System.out.println("add " + x.getName() +" "+ x.getWeight(node));
-                    pq.add(new Path(x, x.getWeight(node)));
+        for(INode x: this.getAllNodes()){
+            ans.getOrCreateNode(x.getName());
+        }
+
+        for(int i = 0 ; i < this.getAllNodes().size(); i++){//start from the chosen node 
+            boolean chosen = true;
+            while(chosen && !pq.isEmpty()){//chose the next node that is not include in MST
+                start = pq.poll(); // choose the next minimum cost
+                INode temp1 = start.returnPath();
+                if(temp1.getName().equals(placebo)){//this is the first node
+                    set.add(temp1.getName());
+                }
+                if(set.contains(temp1.getName())){
+                    break;
+                }
+                //MST doesnt contain this node, add temp to this node
+                set.add(temp1.getName());
+                //connect temp to parent
+                for(INode x: temp1.getNeighbors()){
+                    int o = x.getWeight(temp1);
+                    if(set.contains(x.getName()) && o == start.returnCost()){
+                        INode ans1 = ans.getOrCreateNode(temp1.getName());
+                        ans1.addUndirectedEdgeToNode(ans.getOrCreateNode(x.getName()), o);
+                        chosen = false;
+                        break;
+                    }
                 }
             }
-            System.out.println("name is: " + path.returnPath().getName() + " cost is:  " + path.returnCost() + "   "+  i++);
-           // temp.addUndirectedEdgeToNode(placebo.returnPath(), placebo.returnCost());
+            for(INode x: start.returnPath().getNeighbors()){//get neighbors
+                if(!set.contains(x.getName()) && !x.getName().equals("start")){
+                    pq.add(new Path(x, x.getWeight(start.returnPath())));
+                }
+            }
         }
-        for(String x: set){
-            System.out.println(x);
-        }
-        return null;
+        return ans;
        
     }
+
+
     public INode random(){
         int length = this.getAllNodes().size();
         INode[] temp = new INode[length];

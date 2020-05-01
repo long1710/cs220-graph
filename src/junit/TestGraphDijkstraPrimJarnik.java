@@ -89,7 +89,8 @@ graph dijkstra1 {
         INode e = g2.getOrCreateNode("E");
         INode f = g2.getOrCreateNode("F");
         INode g = g2.getOrCreateNode("G");
-        
+
+    
         assertEquals(1, c.getWeight(g));
         assertFalse(g.hasEdge(a));
         assertFalse(c.hasEdge(a));
